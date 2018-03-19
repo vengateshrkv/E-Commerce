@@ -6,7 +6,6 @@ const MongoDB = require('../util/db')
 router.get("/", (req, res) => {
     try {
         MongoDB.connectDB((err) => {
-            // if (err) console.log(err);
             const db = MongoDB.getDB();
             db.db().collection('products').
                 find({}).toArray((err, result) => {
@@ -30,8 +29,6 @@ router.get("/:id", (req, res) => {
     let prodId = Number(req.params.id);
     try {
         MongoDB.connectDB((err) => {
-            console.log(err);
-            // if (err) console.log(err);
             const db = MongoDB.getDB();
             db.collection("products").findOne({ productId: prodId }, (err, result) => {
                 if (result !== null) {
