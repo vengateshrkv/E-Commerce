@@ -6,3 +6,6 @@
 $ npm i 
 $ npm start
 ```
+Functionalities
+
+- Product Description
