@@ -1,22 +1,22 @@
-const MongoClient = require('mongodb').MongoClient;
+const MongoClient = require("mongodb").MongoClient;
 
-// DB configuration path
-const url = 'mongodb://localhost:27017/ecommerce';
+// DB configuration
+const url = "mongodb://localhost:27017/ecommerce";
 let _db;
 
-const connectDB = (callback) => {
-    try {
-        MongoClient.connect(url, (err, client) => {
-            _db = client;
-            return callback(err);
-        })
-    } catch (e) {
-        console.log(`Error ${e}`);
-    }
-}
+const connectDB = callback => {
+  try {
+    MongoClient.connect(url, (err, client) => { // Establish db connection
+      _db = client;
+      return callback(err); // return callback parameter.
+    });
+  } catch (e) {
+    console.log(`Error ${e}`);
+  }
+};
 
-const getDB = () => _db
+const getDB = () => _db; // Assigning DB Connection
 
-const disconnectDB = () => _db.close()
+const disconnectDB = () => _db.close(); // close connection
 
-module.exports = { connectDB, getDB, disconnectDB }
+module.exports = { connectDB, getDB, disconnectDB }; // exports all method for reuse
