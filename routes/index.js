@@ -1,65 +1,72 @@
 const express = require("express");
 const router = express.Router();
-const MongoDB = require('../util/db')
+const MongoDB = require("../util/db");
 
 // List of all products
 router.get("/", (req, res) => {
-    try {
-        MongoDB.connectDB((err) => {
-            const db = MongoDB.getDB();
-            db.db().collection('products').
-                find({}).toArray((err, result) => {
-                    if (result !== null) {
-                        res.json(result);
-                    } else {
-                        res.send("Data Not Found");
-                    }
-                    //Close connection
-                    MongoDB.disconnectDB();
-                });
+  try {
+    MongoDB.connectDB(err => { // Establish db connection
+      if (!err) {  // Finding error response            
+        let db = MongoDB.getDB().db(); // Getting DB name
+        db.collection("products").find({}).toArray((err, result) => {  // Fetching Product details
+          if (result !== null) {
+            res.json(result); // Sending response to client
+          } else {
+            res.send("Data Not Found"); // Sending response  to client
+          }
+          MongoDB.disconnectDB(); //Close connection
         });
-    } catch (e) {
-        res.json({ message: "Error" });
-    }
-
+      } else {
+        res.status(400).send(err); // Sending error response to client
+      }
+    });
+  } catch (e) {
+    res.json({ message: `Error  ${e}` });
+  }
 });
 
 // Getting particular product details using productId.
 router.get("/:id", (req, res) => {
-    let prodId = Number(req.params.id);
-    try {
-        MongoDB.connectDB((err) => {
-            const db = MongoDB.getDB();
-            db.collection("products").findOne({ productId: prodId }, (err, result) => {
-                if (result !== null) {
-                    let response = result;
-                    db.collection("reviews").find({ productId: prodId }).toArray((err, result) => {
-                        if (!err) {
-                            let review = {};
-                            let starValue = 0;
-                            let resultCount = result.length;
-                            review.reviewCount = resultCount;
-                            for (let value of result) {
-                                starValue += value.starRate;
-                            }
-                            resultCount === 0 ? review.starRate = 0 : review.starRate = starValue / resultCount;
-                            response.reviewStatus = review;
-                            res.json(response);
-                        } else {
-                            res.status(400).send(err);
-                        }
-                        //Close connection
-                        MongoDB.disconnectDB();
-                    });
+  let prodId = Number(req.params.id); // Getting Product Id
+  try {
+    MongoDB.connectDB(err => { // Establish db connection
+      if (!err) {
+        let db = MongoDB.getDB().db(); // Getting DB name
+        db.collection("products").findOne({ productId: prodId }, (err, result) => { // Fetching Product details using Product Id
+          if (!err) {
+            if (result !== null) {
+              let response = result;
+              db.collection("reviews").find({ productId: prodId }).toArray((err, result) => { // Fetching Review details using Product Id
+                if (!err) {
+                  let review = {};
+                  let starValue = 0;
+                  let resultCount = result.length;
+                  review.reviewCount = resultCount;
+                  for (let value of result) {
+                    starValue += value.starRate;
+                  }
+                  resultCount === 0 ? (review.starRate = 0) : (review.starRate = starValue / resultCount);
+                  response.reviewStatus = review;
+                  res.json(response); // Sending response to client
                 } else {
-                    res.status(400).send("Data Not Found");
+                  res.status(400).send(err); // Sending error response to client
                 }
-            });
+                MongoDB.disconnectDB(); //Close connection
+              });
+            } else {
+              res.send("Data Not Found"); // Sending response to client
+            }
+          } else {
+            res.status(400).send(err); // Sending error response to client
+          }
         });
-    }
-    catch (e) {
-        res.json({ message: "Error" });
-    }
+      } else {
+        res.status(400).send(err); // Sending error response to client
+      }
+    });
+  } catch (e) {
+    res.json({ message: `Error  ${e}` });
+  }
 });
 
 module.exports = router;
