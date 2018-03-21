@@ -1,8 +1,10 @@
 const app = require('express')();
-const config = require('./config/config.json');
+const config = require('./config/config.js');
+const hostId = require("ip").address();
 
-// assigning Server Port
-app.listen(config.env_server_port, config.env_host, () => { });
+
+// Start the app by listening on port 
+app.listen(config.env_server_port, hostId, () => { });
 
 // routes
 app.use('/products', require('./routes/index'));
@@ -17,5 +19,4 @@ app.use((req, res, next) => {
 // error handler
 app.use((err, req, res) => {
     res.status(err.status).send(err.message); // Sending error response to client
-
 });

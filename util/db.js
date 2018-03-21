@@ -1,7 +1,5 @@
 const MongoClient = require("mongodb").MongoClient;
-
-// DB configuration
-const url = "mongodb://localhost:27017/ecommerce";
+const config = require('./config/config.js');
 let _db;
 
 const connectDB = callback => {
