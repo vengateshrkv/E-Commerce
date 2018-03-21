@@ -17,4 +17,5 @@ app.use((req, res, next) => {
 // error handler
 app.use((err, req, res) => {
     res.status(err.status).send(err.message); // Sending error response to client
+
 });

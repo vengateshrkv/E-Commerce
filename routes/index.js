@@ -9,6 +9,7 @@ router.get("/", (req, res) => {
       if (!err) {
         let db = mongoDb.getDB().db(); // Getting DB
         db.collection("products").find({}).toArray((err, result) => {  // Fetching All Product details
+
           if (result !== null) {
             res.json(result); // Sending response to client
           } else {
@@ -32,6 +33,7 @@ router.get("/:id", (req, res) => {
     mongoDb.connectDB(err => { // Establish db connection
       if (!err) {
         let db = mongoDb.getDB().db(); // Getting DB name
+
         db.collection("products").findOne({ productId: prodId }, (err, result) => { // Fetching Product details using Product Id
           if (!err) {
             if (result !== null) {
@@ -52,6 +54,7 @@ router.get("/:id", (req, res) => {
                   res.status(400).send(err); // Sending error response to client
                 }
                 mongoDb.disconnectDB(); //Close connection
+
               });
             } else {
               res.send("Data Not Found"); // Sending response to client
