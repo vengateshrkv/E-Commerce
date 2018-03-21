@@ -9,12 +9,7 @@ router.get("/", (req, res) => {
       if (!err) {
         let db = mongoDb.getDB().db(); // Getting DB
         db.collection("products").find({}).toArray((err, result) => {  // Fetching All Product details
-
-          if (result !== null) {
-            res.json(result); // Sending response to client
-          } else {
-            res.send("Data Not Found"); // Sending response  to client
-          }
+          res.json(result); // Sending response to client
           mongoDb.disconnectDB(); //Close connection
         });
       } else {
@@ -33,42 +28,34 @@ router.get("/:id", (req, res) => {
     mongoDb.connectDB(err => { // Establish db connection
       if (!err) {
         let db = mongoDb.getDB().db(); // Getting DB name
-
         db.collection("products").findOne({ productId: prodId }, (err, result) => { // Fetching Product details using Product Id
           if (!err) {
-            if (result !== null) {
-              let response = result;
-              db.collection("reviews").find({ productId: prodId }).toArray((err, result) => { // Fetching Review details using Product Id
-                if (!err) {
-                  let review = {};
-                  let starValue = 0;
-                  let resultCount = result.length;
-                  review.reviewCount = resultCount;
-                  for (let value of result) {
-                    starValue += value.starRate;
-                  }
-                  resultCount === 0 ? (review.starRate = 0) : (review.starRate = starValue / resultCount);
-                  response.reviewStatus = review;
-                  res.json(response); // Sending response to client
-                } else {
-                  res.status(400).send(err); // Sending error response to client
+            let response = result;
+            db.collection("reviews").find({ productId: prodId }).toArray((err, result) => { // Fetching Review details using Product Id
+              if (!err) {
+                let [review, starValue, resultCount] = [{}, 0, result.length]
+                review.reviewCount = resultCount;
+                for (let value of result) {
+                  starValue += value.starRate;
                 }
+                resultCount === 0 ? (review.starRate = 0) : (review.starRate = starValue / resultCount);
+                response.reviewStatus = review;
+                res.json(response); // Sending response to client
                 mongoDb.disconnectDB(); //Close connection
-
-              });
-            } else {
-              res.send("Data Not Found"); // Sending response to client
-            }
+              } else {
+                res.status(400).send(err);
+              }
+            });
           } else {
-            res.status(400).send(err); // Sending error response to client
+            res.status(400).send(err);
           }
         });
       } else {
-        res.status(400).send(err); // Sending error response to client
+        res.status(400).send(err);
       }
     });
   } catch (e) {
-    res.json({ message: `Error  ${e}` });
+    res.json({ message: `${e}` });
   }
 });
 

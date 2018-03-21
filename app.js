@@ -1,10 +1,8 @@
 const app = require('express')();
-const config = require('./config/config.js');
-const hostId = require("ip").address();
-
+const config = require('./config/config');
 
 // Start the app by listening on port 
-app.listen(config.env_server_port, hostId, () => { });
+app.listen(config.app.env_server_port, config.app.env_host, () => { });
 
 // routes
 app.use('/products', require('./routes/index'));

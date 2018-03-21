@@ -1,15 +1,16 @@
 const MongoClient = require("mongodb").MongoClient;
-const config = require('./config/config.js');
+const config = require('../config/config');
 let _db;
 
 const connectDB = callback => {
   try {
-    MongoClient.connect(url, (err, client) => { // Establish db connection
+    MongoClient.connect(config.db.env_db_url, (err, client) => { // Establish db connection
       _db = client;
       return callback(err); // return callback parameter.
     });
   } catch (e) {
     console.log(`Error ${e}`);
+    return callback(e);
   }
 };
 
