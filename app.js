@@ -1,11 +1,11 @@
 const app = require('express')();
 const config = require('./config/config');
 
-// Start the app by listening on port 
-app.listen(config.app.env_server_port, config.app.env_host, () => { });
-
 // routes
 app.use('/products', require('./routes/index'));
+
+// Start the app by listening on port 
+app.listen(config.app.env_server_port, config.app.env_host, () => { });
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
